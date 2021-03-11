@@ -1,5 +1,6 @@
 import telebot
 import openpyxl
+import command
 
 from telebot import types
 
@@ -12,13 +13,6 @@ book = openpyxl.open('data.xlsx', read_only=True)
 
 @bot.message_handler(commands=['start'])
 def com_start(message):
-    markup_start = types.ReplyKeyboardMarkup(row_width=1)
-    btn_raspis = types.KeyboardButton('Расписание')
-    btn_about = types.KeyboardButton('Контакты')
-    markup_start.row(btn_raspis, btn_about)
-    bot.send_message(
-        message.chat.id, "Выберите, что хотите узнать:", reply_markup=markup_start)
-    #bot.send_message(message.chat.id,'Добро пожаловать в тестовый бот!\nЧтобы узнать все комманды введите /help')
 
 
 @bot.message_handler(commands=['help'])
