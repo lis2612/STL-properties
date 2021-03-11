@@ -34,6 +34,4 @@ if __name__ == "__main__":
         #print(type(sys.argv[1]))
         calculate(sys.argv[1])
     else:
-        print ("В аргументах не указано имя файла")
-
-
+        print ("В аргументах не указано имя файла. Формат использования: test_stl.py file.stl")
