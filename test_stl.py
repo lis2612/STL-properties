@@ -3,8 +3,16 @@ from stl import mesh
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot
 import sys
+import argparse
 
-def calculate(f):
+def createParser ():
+    parser = argparse.ArgumentParser()
+    #Добавляем аргументы
+    parser.add_argument ('-f','--file', nargs='?',help='Filename STL model')
+    parser.add_argument('-p','--price',nargs='?',default=10,help='Price of gram 3d-printing model')
+    return parser
+
+def calculate(f,gramm_price):
     # Create a new plot
     figure = pyplot.figure()
     axes= mplot3d.Axes3D(figure)
@@ -25,13 +33,17 @@ def calculate(f):
     print("Volume                                  = {:.2f} cm^3".format(volume))
     mass=round(volume*1.25)
     print("Mass                                    = {:.2f} g".format(mass))
-    price=mass*2000/1000*5
+    price=mass*gramm_price
     print("Price                                   ={:.2f} RUR" .format(price))
     #help('FORMATTING')
 
 if __name__ == "__main__":
-    if len (sys.argv) > 1:
-        #print(type(sys.argv[1]))
-        calculate(sys.argv[1])
-    else:
-        print ("В аргументах не указано имя файла. Формат использования: test_stl.py file.stl")
+    parser = createParser()
+    namespace = parser.parse_args()
+    print (namespace)
+
+    if namespace.file==None:
+        parser.print_help()
+    if namespace.file:
+        calculate(namespace.file,float(namespace.price))
+    
