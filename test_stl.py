@@ -1,11 +1,11 @@
-import numpy
+# import numpy
 from stl import mesh
 # from mpl_toolkits import mplot3d
 # from matplotlib import pyplot
-import sys
+# import sys
 import argparse
-import stl
-import math
+# import stl
+# import math
 
 
 def createParser():
@@ -96,8 +96,10 @@ def calculate(f, gramm_price, density, infill_density, shell_thicken):
     # infill_cog,
     # infill_inertia = your_mesh.get_mass_properties_with_density(
     #     density*infill_density)
-    infill_volume = your_mesh.get_mass_properties_with_density(density*infill_density)[0]
-    infill_vmass = your_mesh.get_mass_properties_with_density(density*infill_density)[1]
+    infill_volume = your_mesh.get_mass_properties_with_density(
+        density*infill_density)[0]
+    infill_vmass = your_mesh.get_mass_properties_with_density(
+        density*infill_density)[1]
     # print("Volume     = {:.2f} cm^3".format(infill_volume/1000))
     # print("Mass       = {:.2f} g".format((infill_vmass/1000)))
     # print("Price      = {:.2f} RUR" .format(infill_vmass/1000*gramm_price))
