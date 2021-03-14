@@ -1,11 +1,30 @@
-import numpy
+# import numpy
 from stl import mesh
 # from mpl_toolkits import mplot3d
 # from matplotlib import pyplot
-import sys
+# import sys
 import argparse
-import stl
-import math
+# import stl
+# import math
+
+
+class CalcDetal(mesh.Mesh):
+    def __init__(self, file):
+        self = mesh.Mesh.from_file(
+                        file,
+                        remove_duplicate_polygons=True,
+                        remove_empty_areas=True,
+                        calculate_normals=True
+                        )
+
+    @classmethod
+    def getObjHeight(self):
+        
+        return self.z.max()-self.z.min()
+
+    @classmethod
+    def test(self):
+        print (mesh.Mesh.data['vectors'])
 
 
 def createParser():
@@ -45,26 +64,6 @@ def createParser():
                         )
     return parser
 
-
-def getObjHeight(obj):
-    return obj.z.max()-obj.z.min()
-
-# def toDecart(r,theta,phi):
-#     x=round(r*math.sin(theta)*math.cos(phi),5)
-#     y=round(r*math.sin(theta)*math.sin(phi),5)
-#     z=round(r*math.cos(theta),5)
-#     # print("To Decart:",x,y,z)
-#     return x,y,z
-
-# def toSphere(x,y,z):
-#     r=math.sqrt(x*x+y*y+z*z)
-#     theta=math.acos(z/r)
-#     phi=math.atan(y/x)
-#     # print(x,y,z)
-#     # print("To Sphere:",r,theta,phi)
-#     # toDecart(r,theta,phi)
-#     return r,theta,phi
-
     # Функция расчета стоимости печати изделия
     # f - STL файл модели
     # gramm_price - стоимость печати за грамм готового изделия
@@ -76,11 +75,12 @@ def getObjHeight(obj):
 def calculate(f, gramm_price, density, infill_density, shell_thicken):
 
     # Load the STL file
-    your_mesh = mesh.Mesh.from_file(
-        f,
-        remove_duplicate_polygons=True,
-        remove_empty_areas=True,
-        calculate_normals=True)
+    # your_mesh = mesh.Mesh.from_file(
+    #                     f,
+    #                     remove_duplicate_polygons=True,
+    #                     remove_empty_areas=True,
+    #                     calculate_normals=True
+    #                     )
     # Get model characteristics
     volume, vmass, cog, inertia = your_mesh.get_mass_properties_with_density(
         density)
@@ -116,12 +116,20 @@ def calculate(f, gramm_price, density, infill_density, shell_thicken):
 
 
 if __name__ == "__main__":
-    parser = createParser()
-    namespace = parser.parse_args()
+    # parser = createParser()
+    # namespace = parser.parse_args()
 
-    if namespace.file is None:
-        parser.print_help()
+    # if namespace.file == None:
+    #     parser.print_help()
 
-    if namespace.file:
-        calculate(namespace.file, namespace.price, namespace.density,
-                  namespace.indensity, namespace.thicken)
+    # if namespace.file:
+    #     calculate(
+    #           namespace.file,
+    #           namespace.price,
+    #           namespace.density,
+    #           namespace.indensity,
+    #           namespace.thicken
+    #           )
+
+    newObj = CalcDetal('box.stl')
+    newObj.test()
