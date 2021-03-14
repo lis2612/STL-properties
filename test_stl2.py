@@ -1,135 +1,64 @@
 # import numpy
 from stl import mesh
-# from mpl_toolkits import mplot3d
-# from matplotlib import pyplot
 # import sys
 import argparse
 # import stl
 # import math
 
 
-class CalcDetal(mesh.Mesh):
-    def __init__(self, file):
-        self = mesh.Mesh.from_file(
-                        file,
-                        remove_duplicate_polygons=True,
-                        remove_empty_areas=True,
-                        calculate_normals=True
-                        )
+class CalcDetal():
 
-    @classmethod
-    def getObjHeight(self):
-        
-        return self.z.max()-self.z.min()
+    # Detal: mesh.Mesh
 
-    @classmethod
-    def test(self):
-        print (mesh.Mesh.data['vectors'])
+    def __init__(self, file: str):
+        self.Detal = mesh.Mesh.from_file(file,
+                                         calculate_normals=True,
+                                         remove_duplicate_polygons=True,
+                                         remove_empty_areas=True,
+                                         )
+        self.__PriceOfGram = 10
+        self.__MaterialDensity = 1.25
 
+    @property
+    def Height(self):
+        Height = self.Detal.z.max()-self.Detal.z.min()
+        return Height
 
-def createParser():
-    parser = argparse.ArgumentParser()
-    # Добавляем аргументы
-    parser.add_argument('file',
-                        nargs='?',
-                        help='Filename STL model'
-                        )
-    parser.add_argument('-p',
-                        '--price',
-                        nargs='?',
-                        type=float,
-                        default=10,
-                        help='Price of gram 3d-printing model. Default=10'
-                        )
-    parser.add_argument('-d',
-                        '--density',
-                        nargs='?',
-                        type=float,
-                        default=1.25,
-                        help='Density of material. Default=1.25'
-                        )
-    parser.add_argument('-i',
-                        '--indensity',
-                        nargs='?',
-                        type=float,
-                        default=0.2,
-                        help='Density of infill pattern. Default=0.2'
-                        )
-    parser.add_argument('-t',
-                        '--thicken',
-                        nargs='?',
-                        type=float,
-                        default=1,
-                        help='Shell thicken. Default=1'
-                        )
-    return parser
+    @property
+    def PriceOfGram(self):
+        return self.__PriceOfGram
 
-    # Функция расчета стоимости печати изделия
-    # f - STL файл модели
-    # gramm_price - стоимость печати за грамм готового изделия
-    # density - плотность материала
-    # infill_density - плотность рисунка заполнения
-    # shell_thicken - толщина стенок
+    @PriceOfGram.setter
+    def PriceOfGram(self, price):
+        if price >= 0:
+            self.__PriceOfGram = price
+        else:
+            raise ValueError
+
+    @property
+    def MaterialDensity(self):
+        return self.__MaterialDensity
+
+    @MaterialDensity.setter
+    def MaterialDensity(self, Density):
+        if Density > 0:
+            self.__MaterialDensity = Density
+        else:
+            raise ValueError
+
+    @property
+    def Price(self):
+        vmass = self.Detal.get_mass_properties_with_density(
+            self.MaterialDensity)[1]/1000
+        print(vmass)
+        Price = vmass*self.PriceOfGram
+        return Price
 
 
-def calculate(f, gramm_price, density, infill_density, shell_thicken):
-
-    # Load the STL file
-    # your_mesh = mesh.Mesh.from_file(
-    #                     f,
-    #                     remove_duplicate_polygons=True,
-    #                     remove_empty_areas=True,
-    #                     calculate_normals=True
-    #                     )
-    # Get model characteristics
-    volume, vmass, cog, inertia = your_mesh.get_mass_properties_with_density(
-        density)
-    # print("Volume     = {:.2f} cm^3".format(volume/1000))
-    # print("Mass       = {:.2f} g".format((vmass/1000),1))
-    # print("Price      = {:.2f} RUR" .format(vmass/1000*gramm_price))
-
-    # Calculate infill volume
-    kscale = 1-2*shell_thicken/getObjHeight(your_mesh)
-    your_mesh.data['vectors'] *= kscale
-    # infill_volume,
-    # infill_vmass,
-    # infill_cog,
-    # infill_inertia = your_mesh.get_mass_properties_with_density(
-    #     density*infill_density)
-    infill_volume = your_mesh.get_mass_properties_with_density(density*infill_density)[0]
-    infill_vmass = your_mesh.get_mass_properties_with_density(density*infill_density)[1]
-    # print("Volume     = {:.2f} cm^3".format(infill_volume/1000))
-    # print("Mass       = {:.2f} g".format((infill_vmass/1000)))
-    # print("Price      = {:.2f} RUR" .format(infill_vmass/1000*gramm_price))
-
-    # Calculate mass and price of detal
-    shell_mass = (volume-infill_volume)*density
-    detal_mass = infill_vmass+shell_mass
-    detal_price = detal_mass/1000*gramm_price
-
-    print("********************** INVOICE ***************************")
-    print("Mass       = {:.2f} g".format((detal_mass/1000)))
-    print("Price      = {:.2f} RUR" .format(detal_price))
-    print("**********************************************************")
-
-    # your_mesh.save('new.stl')
-
-
-if __name__ == "__main__":
-    # parser = createParser()
-    # namespace = parser.parse_args()
-
-    # if namespace.file == None:
-    #     parser.print_help()
-
-    # if namespace.file:
-    #     calculate(
-    #           namespace.file,
-    #           namespace.price,
-    #           namespace.density,
-    #           namespace.indensity,
-    #           namespace.thicken
-    #           )
-
-    newObj = CalcDetal('box.stl')
-    newObj.test()
+if __name__ == '__main__':
+    obj = CalcDetal('box.stl')
+    print(obj.Height)
+    print(obj.PriceOfGram)
+    print(obj.MaterialDensity)
+    obj.PriceOfGram = 25
+    print(obj.Price)
