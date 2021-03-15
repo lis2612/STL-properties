@@ -1,39 +1,23 @@
-# import numpy
-from numpy import isnat
 from stl import mesh
-# import sys
-# import argparse
-# import stl
-# import math
 
 
 class DetalCalc():
     """Calculates price 3d-print"""
 
-    def __init__(self, file: str, material='PLA'):
-        """Load model from file
-        file: STL model to load
-        material: set material to print
-            PLA, ABS"""
-        self.Detal = mesh.Mesh.from_file(file,
-                                         calculate_normals=True,
-                                         remove_duplicate_polygons=True,
-                                         remove_empty_areas=True,
-                                         )
-        self.__PriceOfGram = 10
-        self.__DicOfMaterialDensity = {
-            'PLA': 1.25,
-            'ABS': 1.5
-        }
-        if self.__DicOfMaterialDensity.get(material) is None:
-            print('Material "{}" is missing'.format(material))
-            print('Used default value: "PLA"')
-            self.__Material = 'PLA'
-        else:
-            self.__Material = material
-        self.__MaterialDensity = self.__DicOfMaterialDensity[self.__Material]
-    
-    
+# ************************** ATTRIBUTES *****************************
+    __PriceOfGram = 10
+    __DicOfMaterialDensity = {
+        'PLA': 1.25,
+        'ABS': 1.05,
+        'PETG': 1.3,
+        'SBS': 1.01,
+        'FLEX': 1.2,
+        'TPU': 1.25
+    }
+# ************************ END OF ATTRIBUTES ************************
+
+
+# ************************** PROPERTIES *****************************
 
     @property
     def Height(self):
@@ -79,10 +63,35 @@ class DetalCalc():
         """Returnes price 3d-printing"""
         Price = self.Mass*self.PriceOfGram
         return Price
+# ************************ END OF PROPERTIES ************************
 
+
+# ************************ METHODS **********************************
     def PrintPrice(self):
         """Print price and mass"""
         print("********************** INVOICE ***************************")
         print("Mass       = {:.2f} g".format((self.Mass)))
         print("Price      = {:.2f} RUR" .format(self.Price))
         print("**********************************************************")
+
+    def __init__(self, file: str, material='PLA', PrintPrice=10.0):
+        """Load model from file
+        file: STL model to load
+        material: set material to print
+                  PLA, ABS, PETG, SBS, FLEX, TPU"""
+        self.Detal = mesh.Mesh.from_file(file,
+                                         calculate_normals=True,
+                                         remove_duplicate_polygons=True,
+                                         remove_empty_areas=True,
+                                         )
+
+        if self.__DicOfMaterialDensity.get(material) is None:
+            print('Material "{}" is missing'.format(material))
+            print('Used default value: "PLA"')
+            self.__Material = 'PLA'
+        else:
+            self.__Material = material
+        self.__MaterialDensity = self.__DicOfMaterialDensity[self.__Material]
+        self.__PriceOfGram = PrintPrice
+
+# ************************ END OF METHODS ***************************
